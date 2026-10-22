@@ -8,7 +8,11 @@ Requirements: macOS with Xcode 26.2, [XcodeGen](https://github.com/yonaskolb/Xco
 
 1. Set your identity in `project.yml`: `bundleIdPrefix`, `PRODUCT_BUNDLE_IDENTIFIER`
    (default `com.example.pocketagent`) and `DEVELOPMENT_TEAM: YOUR_TEAM_ID` (or pick the team in Xcode).
-2. Put the optional native engines in place (they are git-ignored, too big for git):
+2. Optional: put the native engines in place (git-ignored, too big for git). Without them the
+   project still builds: `Vendor/LlamaBonsai` and `Vendor/SDCpp` detect the missing
+   `.xcframework` and fall back to stub modules, so Bonsai/GGUF models and on-device image
+   generation are simply switched off. If you add an engine after a first resolve, reset package
+   caches (Xcode: File > Packages > Reset Package Caches) so the manifest is re-evaluated.
    ```bash
    . tools/mac/pa-vendor.sh
    ensure_llama_framework "$PWD"   # Bonsai/llama.cpp engine, downloaded
@@ -19,5 +23,6 @@ Requirements: macOS with Xcode 26.2, [XcodeGen](https://github.com/yonaskolb/Xco
 4. Get the model: the app downloads it on first launch, or run `scripts/download-model.sh`
    and copy the file to the phone via the Files app.
 
-`.github/workflows/build.yml` is an unsigned compile check on a macOS runner; it needs no secrets.
+`.github/workflows/build.yml` is an unsigned compile check on a macOS runner; it needs no secrets and
+builds a clean clone without the optional engines.
 

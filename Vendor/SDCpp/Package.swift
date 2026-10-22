@@ -10,8 +10,10 @@
 // функции sd.cpp — ни одного ggml_*. Подробно и с проверкой символов —
 // tools/mac/pa-vendor.sh, раздел «Второй движок».
 //
-// ⚠️ Бинарник НЕ в git и ОБЯЗАН лежать рядом с этим файлом до сборки: без него
-// резолв пакета падает. Кладёт его тот же раскладчик, что и движок Bonsai
+// ⚠️ Бинарник НЕ в git. Он ОПЦИОНАЛЕН: если sdcpp.xcframework лежит рядом с этим
+// файлом — собирается настоящий модуль SDEngine; если нет — подставляется пустая
+// заглушка (модуль SDEngineStub), `canImport(SDEngine)` в приложении ложно, и
+// проект собирается без движка картинок (так делает CI на чистом клоне). Кладёт его тот же раскладчик, что и движок Bonsai
 // (ensure_llama_framework в tools/mac/pa-vendor.sh раскладывает оба движка).
 //
 // ⚠️ В фреймворке только слой для настоящего айфона (arm64), слоя симулятора нет:
@@ -22,7 +24,12 @@
 // регистр букв: модуль «SDCpp» и модуль фреймворка «sdcpp» для него одно имя, и сборка
 // падала «cannot load module 'SDCpp' as 'sdcpp'» (проверка на мини 23.09.2026).
 
+import Foundation
 import PackageDescription
+
+// Лежит ли бинарник рядом с манифестом. Манифест — обычный Swift, читать файлы ему можно.
+let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
+let hasEngine = FileManager.default.fileExists(atPath: packageDir + "/sdcpp.xcframework")
 
 let package = Package(
   name: "SDCpp",
@@ -30,23 +37,27 @@ let package = Package(
     .iOS(.v17),
   ],
   products: [
-    // Имя менять НЕЛЬЗЯ: приложение пишет `import SDEngine`.
-    .library(name: "SDEngine", targets: ["SDEngine"])
+    // Имя продукта менять НЕЛЬЗЯ (на него ссылается project.yml). Модуль внутри —
+    // SDEngine, если движок на месте, иначе SDEngineStub (тогда `import SDEngine` не работает).
+    .library(name: "SDEngine", targets: [hasEngine ? "SDEngine" : "SDEngineStub"])
   ],
-  targets: [
-    .binaryTarget(name: "sdcpp", path: "sdcpp.xcframework"),
-    // Посредник: модуль фреймворка называется `sdcpp`, приложение импортирует
-    // `SDEngine`. Переименование модуля чинится в одном файле, а не по приложению.
-    .target(
-      name: "SDEngine",
-      dependencies: ["sdcpp"],
-      linkerSettings: [
-        // Фреймворк сам зовёт Metal и Accelerate; объявляем явно, чтобы
-        // приложение не зависело от того, подтянет ли их кто-то ещё.
-        .linkedFramework("Metal"),
-        .linkedFramework("MetalKit"),
-        .linkedFramework("Accelerate"),
-      ]
-    ),
-  ]
+  targets: hasEngine
+    ? [
+      .binaryTarget(name: "sdcpp", path: "sdcpp.xcframework"),
+      // Посредник: модуль фреймворка называется `sdcpp`, приложение импортирует
+      // `SDEngine`. Переименование модуля чинится в одном файле, а не по приложению.
+      .target(
+        name: "SDEngine",
+        dependencies: ["sdcpp"],
+        linkerSettings: [
+          // Фреймворк сам зовёт Metal и Accelerate; объявляем явно.
+          .linkedFramework("Metal"),
+          .linkedFramework("MetalKit"),
+          .linkedFramework("Accelerate"),
+        ]
+      ),
+    ]
+    : [
+      .target(name: "SDEngineStub", path: "Sources/SDEngineStub")
+    ]
 )

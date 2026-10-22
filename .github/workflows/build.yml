@@ -1,103 +1,62 @@
-# Проверочная сборка Pocket Agent.
+# Unsigned compile check for Pocket Agent.
 #
-# Зачем: как можно быстрее ловить ошибки компиляции. Сборка идёт БЕЗ ПОДПИСИ,
-# поэтому этому файлу НЕ НУЖЕН НИ ОДИН секрет — он работает сразу после первого push.
+# Catches compile errors early. No signing and no secrets are needed.
 #
-# Что делает по шагам: качает исходники → выбирает Xcode → ставит XcodeGen →
-# достаёт из кеша готовую библиотеку → генерирует PocketAgent.xcodeproj из project.yml →
-# скачивает библиотеку LiteRT-LM по прямой ссылке → собирает под «любой iPhone» без подписи.
-#
-# С переходом на локальный пакет (Vendor/LiteRTLM) репозиторий Google больше
-# НЕ клонируется вообще: Swift-часть лежит у нас в репозитории, а готовая библиотека
-# качается одним файлом с релиза по ссылке с контрольной суммой.
-#
-# Сколько стоит: репозиторий приватный, минуты Mac считаются с множителем x10.
-# Одна сборка ~5-8 минут стены = ~50-80 минут из месячного лимита (Free 2000, Pro 3000).
-# Поэтому здесь стоит и отмена дублей (concurrency), и потолок времени (timeout-minutes).
+# The optional native engines (Vendor/LlamaBonsai/llama.xcframework and
+# Vendor/SDCpp/sdcpp.xcframework) are not in git. On a clean clone the vendor
+# packages fall back to stub modules, the app's `#if canImport(...)` guards
+# switch those engines off, and the rest of the app builds as usual.
 
-name: Проверочная сборка
+name: Build check
 
 on:
   push:
     branches: [main]
-    # Правки только в текстах не тратят маковские минуты.
     paths-ignore:
       - "**/*.md"
-
       - ".gitignore"
   pull_request:
     branches: [main]
-  # Кнопка «Run workflow» на вкладке Actions.
   workflow_dispatch:
 
-# Новый push в ту же ветку отменяет предыдущую незавершённую сборку — экономия минут.
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  # ────────── Про GIT_LFS_SKIP_SMUDGE: обход УБРАН осознанно ──────────
-  # Раньше здесь стояло GIT_LFS_SKIP_SMUDGE: "1". Он был нужен ровно по одной причине:
-  # Xcode клонировал репозиторий Google целиком, а у того битые LFS-объекты для Android
-  # («remote missing object») — клон падал.
-  #
-  # Теперь этого клона НЕТ: Swift-часть лежит у нас в Vendor/LiteRTLM, готовая
-  # библиотека качается отдельным файлом с релиза. Единственное, что вообще
-  # клонируется в этом файле, — наш собственный репозиторий, а в нём LFS не
-  # используется (файла .gitattributes нет ни одного).
-  #
-  # Оставлять «на всякий случай» — ХУЖЕ, чем убрать: если мы когда-нибудь положим
-  # в свой репозиторий файл через LFS, этот обход молча подсунет вместо файла
-  # текстовую заглушку на 130 байт, и сборка упадёт с непонятной ошибкой.
-  # Тихая ловушка вместо страховки. Поэтому — убрано.
-  # ─────────────────────────────────────────────────────────────────────
-
-  # Куда Xcode складывает промежуточные файлы. Задаём явно, чтобы путь был
-  # предсказуемым: по нему кешируется скачанная библиотека и по нему же
-  # шаг «Замер» считает мегабайты. Папка DerivedData/ уже в .gitignore.
   DERIVED_DATA: DerivedData
-  # Версия Xcode. На образе macos-26 доступны 26.0.1 … 26.6 (по умолчанию 26.6).
-  # Держим ту же, что на Маке владельца (project.yml → xcodeVersion: "26.2").
-  # ⚠️ Если шаг «Выбрать версию Xcode» упал с «Xcode 26.2 not found» —
-  #    посмотреть в логе предыдущего шага список установленных и вписать сюда любую из него.
   XCODE_VERSION: "26.2"
-  # Имена ниже сверены с project.yml: name: PocketAgent, schemes: PocketAgent.
   XCODE_PROJECT: PocketAgent.xcodeproj
   XCODE_SCHEME: PocketAgent
 
 jobs:
   build:
-    name: Сборка без подписи
+    name: Build (unsigned)
     runs-on: macos-26
     timeout-minutes: 40
 
     steps:
-      # 1. Исходники. Глубина 1 — история сборке не нужна, качается быстрее.
-      - name: Забрать исходники
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      # 2. Диагностика ДО выбора Xcode: если следующий шаг упадёт, список уже будет в логе.
-      - name: Показать, какие Xcode стоят на машине
+      - name: List installed Xcode versions
         run: ls -1 /Applications | grep -i '^Xcode' || true
 
-      # 3. Выбор версии Xcode. Номер обязательно в кавычках, иначе YAML
-      #    превратит 26.2 в число 26.2, а 26.0 — в 26, и action не найдёт версию.
-      - name: Выбрать версию Xcode
+      # The version must be quoted, otherwise YAML turns 26.2 into a number.
+      - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: "${{ env.XCODE_VERSION }}"
 
-      - name: Записать в лог версию Xcode и Swift
+      - name: Print Xcode and Swift versions
         run: |
           xcodebuild -version
           swift --version
 
-      # 4. XcodeGen — им из project.yml делается сам файл проекта.
-      #    Проекта .xcodeproj в репозитории НЕТ, он всегда пересоздаётся.
-      #    ⚠️ Упало «brew: command not found» — образ раннера сломан, перезапустить job.
-      - name: Поставить XcodeGen
+      # The .xcodeproj is not in git; it is generated from project.yml.
+      - name: Install XcodeGen
         env:
           HOMEBREW_NO_AUTO_UPDATE: 1
           HOMEBREW_NO_INSTALL_CLEANUP: 1
@@ -108,33 +67,9 @@ jobs:
           fi
           xcodegen --version
 
-      # 5. Кеш. РАНЬШЕ он спасал от клона репозитория Google на 666 МБ.
-      #    ТЕПЕРЬ клона нет вовсе, и беречь надо ровно одно — готовую библиотеку,
-      #    которую качают по ссылке из Vendor/LiteRTLM/Package.swift. Она ложится
-      #    в <DerivedData>/SourcePackages/artifacts.
-      #
-      #    Про ключ. Package.resolved для этого НЕ ГОДИТСЯ, и вот почему:
-      #      • он перечисляет только пакеты, которые тянутся из гита, а наш пакет
-      #        локальный — готовая библиотека приходит прямой ссылкой и в этот файл
-      #        не попадает вообще;
-      #      • сам файл живёт внутри PocketAgent.xcodeproj, а проекта в репозитории
-      #        нет (он в .gitignore и пересоздаётся) — то есть на момент подсчёта
-      #        ключа файла просто не существует, и hashFiles вернул бы пустоту.
-      #    Поэтому ключ считаем по файлам, где ссылка и контрольная сумма записаны
-      #    по-настоящему: Vendor/**/Package.swift плюс project.yml.
-      #    Меняется версия библиотеки → меняется ключ → кеш перекачивается сам.
-      #    ⚠️ Скачалось криво — временно поменять слово "spm" в ключе на "spm2".
-      #
-      #    ⚠️ ПРО ДВИЖОК APPLE (MLX) И ТОКЕНИЗАТОР. Их версии записаны прямо в project.yml,
-      #    а он в ключе УЖЕ есть — проверено по строке ключа ниже, не по памяти. То есть
-      #    подняли версию пакета Apple → ключ сменился сам → старый кеш не подсунется.
-      #    Отдельной строки для них не нужно, и добавлять её не надо: это было бы удвоение
-      #    того же самого файла в подсчёте.
-      #    Что этот кеш теперь бережёт, кроме библиотеки Google: исходники mlx-swift
-      #    (внутри вставка ml-explore/mlx на 68,7 МБ) и swift-transformers с его пятью
-      #    зависимостями. Первая сборка после смены версии будет заметно дольше — это
-      #    нормально и платится один раз.
-      - name: Достать скачанную библиотеку из кеша
+      # Cache downloaded Swift packages and binary artifacts. The key changes
+      # whenever project.yml or a vendored Package.swift (URLs, checksums) changes.
+      - name: Restore package cache
         id: spm_cache
         uses: actions/cache@v4
         with:
@@ -146,22 +81,13 @@ jobs:
             spm-${{ runner.os }}-${{ env.XCODE_VERSION }}-
             spm-${{ runner.os }}-
 
-      # 6. Генерация проекта из описания.
-      #    ⚠️ Упало здесь — ошибка в project.yml (опечатка в отступах или в имени файла
-      #       из sources). Сообщение XcodeGen показывает строку.
-      - name: Собрать файл проекта из project.yml
+      - name: Generate Xcode project
         run: |
           xcodegen generate
           ls -la "$XCODE_PROJECT"
 
-      # 7. Отдельным шагом — скачивание готовой библиотеки. Так в логе сразу видно,
-      #    что сломалось: сеть/библиотека или уже сам код. Заодно меряем, сколько
-      #    это заняло, — цифра уходит в шаг «Замер» в конце.
-      #    ⚠️ «checksum of downloaded artifact ... does not match» → на релизе подменили
-      #       файл; сверить контрольную сумму в Vendor/LiteRTLM/Package.swift.
-      #    ⚠️ 404 на скачивании → Google убрал файл релиза v0.15.0; поднять версию
-      #       (и ссылку, и сумму, и сами исходники в Vendor) осознанно, одним заходом.
-      - name: Скачать готовую библиотеку LiteRT-LM 0.15.0
+      # A separate step so the log shows whether a failure is network/packages or code.
+      - name: Resolve packages
         run: |
           set -euo pipefail
           START=$(date +%s)
@@ -171,29 +97,7 @@ jobs:
                      -derivedDataPath "$DERIVED_DATA"
           echo "RESOLVE_SECONDS=$(( $(date +%s) - START ))" >> "$GITHUB_ENV"
 
-      # 8. Собственно сборка. Ключевое:
-      #    - generic/platform=iOS — «любой iPhone», без привязки к устройству и симулятору;
-      #    - CODE_SIGNING_ALLOWED=NO — подпись не нужна, секретов у этого файла нет;
-      #    - -skipPackagePluginValidation / -skipMacroValidation — чтобы сборка не встала,
-      #      ожидая ручного «доверять плагину пакета»;
-      #    - -resultBundlePath — отчёт, который ниже прикладывается к упавшей сборке.
-      #
-      #    ⚠️ Частые падения и что чинить (подробная таблица — в BUILD.md):
-      #      «no such module LiteRTLM»            → локальный пакет не подцепился: проверить,
-      #                                             что в project.yml путь ведёт в Vendor/LiteRTLM
-      #                                             и что эта папка попала в репозиторий
-      #      Extra argument 'wrappedValue'        → LiteRTToolSchemas.swift, убрать = "" у всех схем
-      #      Member 'gpu' expects argument        → LiteRTRuntime.swift, писать .gpu() со скобками
-      #      ошибки строгой конкурентности        → в project.yml должен остаться SWIFT_VERSION 5.0
-      #      «no such module MLXLLM/MLXLMCommon»  → не подтянулся пакет Apple: проверить блок
-      #                                             MLXLM в project.yml и что версия 3.31.4 ещё
-      #                                             существует на сервере
-      #      «no such module Tokenizers»          → не подтянулся swift-transformers; он нужен
-      #                                             движку Apple и приходит отдельным пакетом
-      #      ambiguous use of 'Tokenizer'/'ToolSpec' → в MLXRuntime.swift имя пишется полностью,
-      #                                             с названием библиотеки впереди: эти имена
-      #                                             есть и у Apple, и у токенизатора
-      - name: Собрать (Debug, без подписи)
+      - name: Build (Debug, unsigned)
         run: |
           set -o pipefail
           START=$(date +%s)
@@ -212,49 +116,20 @@ jobs:
             CODE_SIGN_ENTITLEMENTS=""
           echo "BUILD_SECONDS=$(( $(date +%s) - START ))" >> "$GITHUB_ENV"
 
-      # 9. Замер. Раньше про «куда уходит время» приходилось гадать — теперь оно
-      #    печатается цифрами в сводке запуска: сколько секунд заняло скачивание,
-      #    сколько сама компиляция и сколько мегабайт реально приехало по сети.
-      #    Шаг ничего не собирает и не может уронить сборку: только читает и печатает.
-      - name: Замер — время шагов и вес скачанного
+      - name: Timing summary
         if: always()
         run: |
-          ART="$DERIVED_DATA/SourcePackages/artifacts"
-
-          if [ -d "$ART" ]; then
-            SIZE=$(du -sh "$ART" | cut -f1)
-          else
-            SIZE="папки нет"
-          fi
-
           {
-            echo "## Замер: куда ушло время"
+            echo "## Timing"
             echo ""
-            echo "| Что | Сколько |"
+            echo "| Step | Seconds |"
             echo "|---|---|"
-            echo "| Скачивание готовой библиотеки | ${RESOLVE_SECONDS:-не дошли} с |"
-            echo "| Компиляция приложения | ${BUILD_SECONDS:-не дошли} с |"
-            echo "| Вес скачанного по сети | $SIZE |"
-            echo "| Кеш пригодился | ${{ steps.spm_cache.outputs.cache-hit || 'нет, качали заново' }} |"
-            echo ""
-            echo "Репозиторий google-ai-edge/LiteRT-LM (666 МБ) больше не клонируется:"
-            echo "Swift-часть лежит в Vendor/LiteRTLM, библиотека приходит одним файлом с релиза."
+            echo "| Package resolution | ${RESOLVE_SECONDS:-not reached} |"
+            echo "| Build | ${BUILD_SECONDS:-not reached} |"
+            echo "| Cache hit | ${{ steps.spm_cache.outputs.cache-hit || 'no' }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
-          echo "── Что реально скачалось ──"
-          if [ -d "$ART" ]; then
-            du -sh "$ART"/* 2>/dev/null || true
-          else
-            echo "папки $ART нет — до скачивания не дошло"
-          fi
-
-          echo "── Что лежит в SourcePackages (checkouts должен быть пустым: клонов нет) ──"
-          ls -la "$DERIVED_DATA/SourcePackages" 2>/dev/null || true
-          ls -la "$DERIVED_DATA/SourcePackages/checkouts" 2>/dev/null || true
-
-      # 10. Отчёт о сборке — только когда что-то упало, чтобы не копить мусор.
-      #    Скачивается со страницы запуска, открывается на Маке двойным щелчком.
-      - name: Приложить отчёт упавшей сборки
+      - name: Upload build report (failures only)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
