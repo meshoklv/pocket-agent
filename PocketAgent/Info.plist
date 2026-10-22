@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Обязательно для сборок с iOS 11 SDK и новее: без этого ключа App Store
+	     Connect отклоняет загрузку с «Missing Info.plist value». -->
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>ru</string>
+
+	<!-- Приложение целиком русское. Без этого списка система считает язык приложения
+	     неизвестным и подставляет свои тексты (окно выбора папки, названия кнопок,
+	     единицы измерения) на языке ТЕЛЕФОНА — получалась смесь двух языков. -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>ru</string>
+	</array>
+
+	<key>CFBundleDisplayName</key>
+	<string>Карманный агент</string>
+
+	<key>CFBundleName</key>
+	<string>PocketAgent</string>
+
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+
+	<!-- Папка Documents приложения видна в «Файлах» — запасной путь без выбора чужой папки -->
+	<key>UIFileSharingEnabled</key>
+	<true/>
+
+	<!-- Работаем с ОРИГИНАЛОМ документа у файл-провайдера, а не с копией.
+	     Без этого система подсовывает копии, и правки агента никуда не попадают. -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+
+	<!-- Экран запуска без сториборда.
+	     Словарь намеренно ПУСТОЙ: UIColorName с пустым именем — это ссылка на цвет,
+	     которого нет в ассетах, и фон получался чёрным (мигание на светлой теме).
+	     Пустой словарь = системный фон. -->
+	<key>UILaunchScreen</key>
+	<dict/>
+
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<!-- Приём файла из чужого приложения: «Поделиться → Карманный агент» и «Открыть в».
+	     Без этого списка приложения нет в системном меню «Поделиться» вовсе.
+
+	     ⚠️ LSHandlerRank = Alternate ОБЯЗАТЕЛЕН. Мы беремся за public.data, то есть
+	     почти за любой файл, — и с рангом Owner/Default система начала бы предлагать
+	     «Карманный агент» как программу по умолчанию для чужих файлов. Alternate
+	     значит «мы просто ещё один пункт в списке», а не «мы теперь открываем ваши PDF».
+
+	     Приём файла НИЧЕГО не меняет сам: приложение показывает, что произойдёт,
+	     и ждёт нажатия — см. AppDelegate.application(_:open:options:). -->
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Файл для агента</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.data</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- Тип файла модели. Формат не наш (его придумала Google), поэтому объявление
+	     именно ИМПОРТИРОВАННОЕ, а не экспортированное. Нужно ради окна выбора файла:
+	     без него система про .litertlm ничего не знает, и файл модели показывается
+	     блёклым и недоступным для выбора. Приложение всё равно проверяет выбранное само —
+	     объявление только помогает человеку найти нужный файл. -->
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.google.litertlm</string>
+			<key>UTTypeDescription</key>
+			<string>Модель LiteRT-LM</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>litertlm</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+
+	<!-- Своей криптографии нет — избавляет от вопросов о шифровании при выкладке -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+
+	<!-- Кнопка «Сохранить в Фото» на экране картинок: только ДОБАВИТЬ снимок,
+	     читать чужие фото не просим (референсы берутся через системный выбор фото,
+	     которому разрешение не нужно). -->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Чтобы сохранить нарисованную картинку в «Фото».</string>
+</dict>
+</plist>

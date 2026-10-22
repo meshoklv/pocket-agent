@@ -1,0 +1,829 @@
+{
+ "generatedAt": "2026-09-10",
+ "libraries": [
+  {
+   "id": "three",
+   "name": "three.js",
+   "version": "0.147.0",
+   "kind": "3d",
+   "files": [
+    {
+     "path": "three/three.min.js",
+     "form": "umd",
+     "global": "THREE"
+    },
+    {
+     "path": "three/three.module.min.js",
+     "form": "module"
+    },
+    {
+     "path": "three/examples/jsm/controls/OrbitControls.js",
+     "form": "module"
+    },
+    {
+     "path": "three/examples/js/controls/OrbitControls.js",
+     "form": "umd",
+     "global": "THREE.OrbitControls"
+    }
+   ],
+   "bare": [
+    "three",
+    "three/addons/",
+    "three/examples/jsm/"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/three",
+    "unpkg.com/three",
+    "cdnjs.cloudflare.com/ajax/libs/three.js",
+    "esm.sh/three",
+    "cdn.skypack.dev/three"
+   ],
+   "license": "MIT",
+   "licenseFile": "three/LICENSE",
+   "bytes": 1307126,
+   "hint": "трёхмерная графика на видеокарте (WebGL)"
+  },
+  {
+   "id": "phaser",
+   "name": "Phaser",
+   "version": "3.90.0",
+   "kind": "game",
+   "files": [
+    {
+     "path": "phaser/phaser.min.js",
+     "form": "umd",
+     "global": "Phaser"
+    },
+    {
+     "path": "phaser/phaser.esm.min.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "phaser"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/phaser",
+    "unpkg.com/phaser",
+    "cdnjs.cloudflare.com/ajax/libs/phaser",
+    "esm.sh/phaser",
+    "cdn.skypack.dev/phaser"
+   ],
+   "license": "MIT",
+   "licenseFile": "phaser/LICENSE.md",
+   "bytes": 2394372,
+   "hint": "движок двумерных игр: сцены, спрайты, физика, ввод"
+  },
+  {
+   "id": "pixi.js",
+   "name": "PixiJS",
+   "version": "8.20.1",
+   "kind": "game",
+   "files": [
+    {
+     "path": "pixi.js/pixi.min.js",
+     "form": "umd",
+     "global": "PIXI"
+    },
+    {
+     "path": "pixi.js/pixi.min.mjs",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "pixi.js"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/pixi.js",
+    "unpkg.com/pixi.js",
+    "cdnjs.cloudflare.com/ajax/libs/pixi.js",
+    "esm.sh/pixi.js",
+    "cdn.skypack.dev/pixi.js"
+   ],
+   "license": "MIT",
+   "licenseFile": "pixi.js/LICENSE",
+   "bytes": 1639480,
+   "hint": "быстрая двумерная графика на видеокарте (внимание: в 8-й версии сначала await app.init())"
+  },
+  {
+   "id": "matter-js",
+   "name": "Matter.js",
+   "version": "0.20.0",
+   "kind": "physics",
+   "files": [
+    {
+     "path": "matter-js/matter.min.js",
+     "form": "umd",
+     "global": "Matter"
+    },
+    {
+     "path": "matter-js/matter.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "matter-js"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/matter-js",
+    "unpkg.com/matter-js",
+    "cdnjs.cloudflare.com/ajax/libs/matter-js",
+    "esm.sh/matter-js",
+    "cdn.skypack.dev/matter-js"
+   ],
+   "license": "MIT",
+   "licenseFile": "matter-js/LICENSE",
+   "bytes": 169395,
+   "hint": "плоская физика: тела, столкновения, пружины"
+  },
+  {
+   "id": "cannon-es",
+   "name": "cannon-es",
+   "version": "0.20.0",
+   "kind": "physics",
+   "files": [
+    {
+     "path": "cannon-es/cannon-es.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "cannon-es"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/cannon-es",
+    "unpkg.com/cannon-es",
+    "esm.sh/cannon-es",
+    "cdn.skypack.dev/cannon-es",
+    "cdnjs.cloudflare.com/ajax/libs/cannon-es"
+   ],
+   "license": "MIT",
+   "licenseFile": "cannon-es/LICENSE",
+   "bytes": 347381,
+   "hint": "объёмная физика (продолжение cannon.js), только в виде модуля"
+  },
+  {
+   "id": "cannon",
+   "name": "cannon.js",
+   "version": "0.6.2",
+   "kind": "physics",
+   "files": [
+    {
+     "path": "cannon/cannon.min.js",
+     "form": "umd",
+     "global": "CANNON"
+    }
+   ],
+   "bare": [
+    "cannon"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/cannon",
+    "unpkg.com/cannon",
+    "cdnjs.cloudflare.com/ajax/libs/cannon.js",
+    "esm.sh/cannon",
+    "cdn.skypack.dev/cannon"
+   ],
+   "license": "MIT",
+   "licenseFile": "cannon/LICENSE",
+   "bytes": 133324,
+   "hint": "объёмная физика по-старому, через глобальную переменную CANNON"
+  },
+  {
+   "id": "p5",
+   "name": "p5.js",
+   "version": "1.11.10",
+   "kind": "creative",
+   "files": [
+    {
+     "path": "p5/p5.min.js",
+     "form": "umd",
+     "global": "p5"
+    },
+    {
+     "path": "p5/addons/p5.sound.min.js",
+     "form": "umd",
+     "global": "p5.sound"
+    }
+   ],
+   "bare": [
+    "p5"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/p5",
+    "unpkg.com/p5",
+    "cdnjs.cloudflare.com/ajax/libs/p5.js",
+    "esm.sh/p5",
+    "cdn.skypack.dev/p5"
+   ],
+   "license": "LGPL-2.1",
+   "licenseFile": "p5/license.txt",
+   "bytes": 1281647,
+   "hint": "рисование и творческое программирование (setup/draw)"
+  },
+  {
+   "id": "tone",
+   "name": "Tone.js",
+   "version": "15.1.22",
+   "kind": "audio",
+   "files": [
+    {
+     "path": "tone/Tone.js",
+     "form": "umd",
+     "global": "Tone"
+    },
+    {
+     "path": "tone/tone.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "tone"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/tone",
+    "unpkg.com/tone",
+    "cdnjs.cloudflare.com/ajax/libs/tone",
+    "esm.sh/tone",
+    "cdn.skypack.dev/tone"
+   ],
+   "license": "MIT",
+   "licenseFile": "tone/LICENSE.md",
+   "bytes": 695236,
+   "hint": "музыка и синтезаторы: ноты, темп, эффекты"
+  },
+  {
+   "id": "howler",
+   "name": "howler.js",
+   "version": "2.2.4",
+   "kind": "audio",
+   "files": [
+    {
+     "path": "howler/howler.min.js",
+     "form": "umd",
+     "global": "Howler"
+    },
+    {
+     "path": "howler/howler.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "howler"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/howler",
+    "unpkg.com/howler",
+    "cdnjs.cloudflare.com/ajax/libs/howler",
+    "esm.sh/howler",
+    "cdn.skypack.dev/howler"
+   ],
+   "license": "MIT",
+   "licenseFile": "howler/LICENSE.md",
+   "bytes": 73852,
+   "hint": "проигрывание звуков и музыки простыми командами"
+  },
+  {
+   "id": "chart.js",
+   "name": "Chart.js",
+   "version": "4.5.1",
+   "kind": "chart",
+   "files": [
+    {
+     "path": "chart.js/chart.umd.js",
+     "form": "umd",
+     "global": "Chart"
+    },
+    {
+     "path": "chart.js/chart.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "chart.js",
+    "chart.js/auto"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/chart.js",
+    "unpkg.com/chart.js",
+    "cdnjs.cloudflare.com/ajax/libs/Chart.js",
+    "esm.sh/chart.js",
+    "cdn.skypack.dev/chart.js"
+   ],
+   "license": "MIT",
+   "licenseFile": "chart.js/LICENSE.md",
+   "bytes": 617866,
+   "hint": "графики и диаграммы: линии, столбцы, круговые"
+  },
+  {
+   "id": "d3",
+   "name": "D3",
+   "version": "7.9.0",
+   "kind": "chart",
+   "files": [
+    {
+     "path": "d3/d3.min.js",
+     "form": "umd",
+     "global": "d3"
+    },
+    {
+     "path": "d3/d3.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "d3"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/d3",
+    "unpkg.com/d3",
+    "cdnjs.cloudflare.com/ajax/libs/d3",
+    "esm.sh/d3",
+    "cdn.skypack.dev/d3"
+   ],
+   "license": "ISC",
+   "licenseFile": "d3/LICENSE",
+   "bytes": 563264,
+   "hint": "данные в картинку: оси, шкалы, свои диаграммы на SVG"
+  },
+  {
+   "id": "bootstrap",
+   "name": "Bootstrap",
+   "version": "5.3.8",
+   "kind": "style",
+   "files": [
+    {
+     "path": "bootstrap/bootstrap.min.css",
+     "form": "css"
+    },
+    {
+     "path": "bootstrap/bootstrap.bundle.min.js",
+     "form": "umd",
+     "global": "bootstrap"
+    }
+   ],
+   "bare": [
+    "bootstrap"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/bootstrap",
+    "unpkg.com/bootstrap",
+    "cdnjs.cloudflare.com/ajax/libs/bootstrap",
+    "esm.sh/bootstrap",
+    "cdn.skypack.dev/bootstrap",
+    "stackpath.bootstrapcdn.com/bootstrap",
+    "maxcdn.bootstrapcdn.com/bootstrap",
+    "netdna.bootstrapcdn.com/bootstrap"
+   ],
+   "license": "MIT",
+   "licenseFile": "bootstrap/LICENSE",
+   "bytes": 313700,
+   "hint": "готовое оформление страницы и элементы: сетка, кнопки, окна"
+  },
+  {
+   "id": "pico",
+   "name": "Pico CSS",
+   "version": "2.1.1",
+   "kind": "style",
+   "files": [
+    {
+     "path": "pico/pico.min.css",
+     "form": "css"
+    }
+   ],
+   "bare": [
+    "@picocss/pico"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/@picocss/pico",
+    "unpkg.com/@picocss/pico",
+    "cdnjs.cloudflare.com/ajax/libs/picocss",
+    "esm.sh/@picocss/pico",
+    "cdn.skypack.dev/@picocss/pico"
+   ],
+   "license": "MIT",
+   "licenseFile": "pico/LICENSE.md",
+   "bytes": 84385,
+   "hint": "крошечное «сразу красиво» без классов — оформляет обычную разметку"
+  },
+  {
+   "id": "water.css",
+   "name": "Water.css",
+   "version": "2.1.1",
+   "kind": "style",
+   "files": [
+    {
+     "path": "water.css/water.min.css",
+     "form": "css"
+    }
+   ],
+   "bare": [
+    "water.css"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/water.css",
+    "unpkg.com/water.css",
+    "cdnjs.cloudflare.com/ajax/libs/water.css",
+    "esm.sh/water.css",
+    "cdn.skypack.dev/water.css"
+   ],
+   "license": "MIT",
+   "licenseFile": "water.css/LICENSE.md",
+   "bytes": 23751,
+   "hint": "самое лёгкое оформление без классов, 23 КБ"
+  },
+  {
+   "id": "tailwindcss",
+   "name": "Tailwind CSS (браузерная сборка)",
+   "version": "4.3.3",
+   "kind": "style",
+   "files": [
+    {
+     "path": "tailwindcss/tailwind.browser.js",
+     "form": "umd"
+    }
+   ],
+   "bare": [
+    "@tailwindcss/browser",
+    "tailwindcss"
+   ],
+   "cdn": [
+    "cdn.tailwindcss.com",
+    "cdn.jsdelivr.net/npm/@tailwindcss/browser",
+    "unpkg.com/@tailwindcss/browser",
+    "esm.sh/@tailwindcss/browser",
+    "cdn.skypack.dev/@tailwindcss/browser"
+   ],
+   "license": "MIT",
+   "licenseFile": "tailwindcss/LICENSE",
+   "bytes": 283360,
+   "hint": "оформление классами прямо в разметке (class=\"flex gap-4\"), собирается в браузере"
+  },
+  {
+   "id": "alpinejs",
+   "name": "Alpine.js",
+   "version": "3.17.2",
+   "kind": "ui",
+   "files": [
+    {
+     "path": "alpinejs/alpine.min.js",
+     "form": "umd",
+     "global": "Alpine"
+    },
+    {
+     "path": "alpinejs/alpine.module.esm.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "alpinejs"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/alpinejs",
+    "unpkg.com/alpinejs",
+    "cdnjs.cloudflare.com/ajax/libs/alpinejs",
+    "esm.sh/alpinejs",
+    "cdn.skypack.dev/alpinejs"
+   ],
+   "license": "MIT",
+   "licenseFile": "alpinejs/LICENSE.md",
+   "bytes": 184684,
+   "hint": "оживить разметку прямо в HTML: x-data, x-show, x-on"
+  },
+  {
+   "id": "jquery",
+   "name": "jQuery",
+   "version": "3.7.1",
+   "kind": "ui",
+   "files": [
+    {
+     "path": "jquery/jquery.min.js",
+     "form": "umd",
+     "global": "jQuery"
+    },
+    {
+     "path": "jquery/jquery.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "jquery"
+   ],
+   "cdn": [
+    "code.jquery.com/jquery",
+    "ajax.googleapis.com/ajax/libs/jquery",
+    "cdn.jsdelivr.net/npm/jquery",
+    "unpkg.com/jquery",
+    "cdnjs.cloudflare.com/ajax/libs/jquery",
+    "esm.sh/jquery",
+    "cdn.skypack.dev/jquery"
+   ],
+   "license": "MIT",
+   "licenseFile": "jquery/LICENSE.txt",
+   "bytes": 176417,
+   "hint": "старый добрый $: найти элемент, повесить обработчик, поменять разметку"
+  },
+  {
+   "id": "animejs",
+   "name": "anime.js",
+   "version": "3.2.2",
+   "kind": "motion",
+   "files": [
+    {
+     "path": "animejs/anime.min.js",
+     "form": "umd",
+     "global": "anime"
+    },
+    {
+     "path": "animejs/anime.es.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "animejs"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/animejs",
+    "unpkg.com/animejs",
+    "cdnjs.cloudflare.com/ajax/libs/animejs",
+    "esm.sh/animejs",
+    "cdn.skypack.dev/animejs"
+   ],
+   "license": "MIT",
+   "licenseFile": "animejs/LICENSE.md",
+   "bytes": 60583,
+   "hint": "плавные движения и переходы для любых элементов"
+  },
+  {
+   "id": "motion",
+   "name": "Motion One",
+   "version": "13.2.0",
+   "kind": "motion",
+   "files": [
+    {
+     "path": "motion/motion.js",
+     "form": "umd",
+     "global": "Motion"
+    },
+    {
+     "path": "motion/motion.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "motion"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/motion",
+    "unpkg.com/motion",
+    "cdnjs.cloudflare.com/ajax/libs/motion",
+    "esm.sh/motion",
+    "cdn.skypack.dev/motion"
+   ],
+   "license": "MIT",
+   "licenseFile": "motion/LICENSE.md",
+   "bytes": 280751,
+   "hint": "движение на родном движке браузера: animate(), scroll(), spring"
+  },
+  {
+   "id": "lodash",
+   "name": "Lodash",
+   "version": "4.17.21",
+   "kind": "util",
+   "files": [
+    {
+     "path": "lodash/lodash.min.js",
+     "form": "umd",
+     "global": "_"
+    },
+    {
+     "path": "lodash/lodash.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "lodash",
+    "lodash-es"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/lodash",
+    "unpkg.com/lodash",
+    "cdnjs.cloudflare.com/ajax/libs/lodash.js",
+    "esm.sh/lodash",
+    "cdn.skypack.dev/lodash"
+   ],
+   "license": "MIT",
+   "licenseFile": "lodash/LICENSE",
+   "bytes": 147849,
+   "hint": "набор мелких помощников для массивов, объектов и строк"
+  },
+  {
+   "id": "dayjs",
+   "name": "Day.js",
+   "version": "1.11.23",
+   "kind": "util",
+   "files": [
+    {
+     "path": "dayjs/dayjs.min.js",
+     "form": "umd",
+     "global": "dayjs"
+    },
+    {
+     "path": "dayjs/dayjs.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "dayjs"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/dayjs",
+    "unpkg.com/dayjs",
+    "cdnjs.cloudflare.com/ajax/libs/dayjs",
+    "esm.sh/dayjs",
+    "cdn.skypack.dev/dayjs"
+   ],
+   "license": "MIT",
+   "licenseFile": "dayjs/LICENSE",
+   "bytes": 15681,
+   "hint": "даты и время: разбор, сложение, красивый вывод"
+  },
+  {
+   "id": "marked",
+   "name": "marked",
+   "version": "18.0.12",
+   "kind": "util",
+   "files": [
+    {
+     "path": "marked/marked.umd.js",
+     "form": "umd",
+     "global": "marked"
+    },
+    {
+     "path": "marked/marked.esm.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "marked"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/marked",
+    "unpkg.com/marked",
+    "cdnjs.cloudflare.com/ajax/libs/marked",
+    "esm.sh/marked",
+    "cdn.skypack.dev/marked"
+   ],
+   "license": "MIT",
+   "licenseFile": "marked/LICENSE",
+   "bytes": 91803,
+   "hint": "превращает разметку Markdown в HTML"
+  },
+  {
+   "id": "canvas-confetti",
+   "name": "canvas-confetti",
+   "version": "1.9.4",
+   "kind": "util",
+   "files": [
+    {
+     "path": "canvas-confetti/confetti.browser.js",
+     "form": "umd",
+     "global": "confetti"
+    },
+    {
+     "path": "canvas-confetti/confetti.module.mjs",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "canvas-confetti"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/canvas-confetti",
+    "unpkg.com/canvas-confetti",
+    "cdnjs.cloudflare.com/ajax/libs/canvas-confetti",
+    "esm.sh/canvas-confetti",
+    "cdn.skypack.dev/canvas-confetti"
+   ],
+   "license": "ISC",
+   "licenseFile": "canvas-confetti/LICENSE",
+   "bytes": 50581,
+   "hint": "салют из конфетти на экране одной командой"
+  },
+  {
+   "id": "qrcodejs",
+   "name": "QRCode.js",
+   "version": "1.0.0",
+   "kind": "util",
+   "files": [
+    {
+     "path": "qrcodejs/qrcode.min.js",
+     "form": "umd",
+     "global": "QRCode"
+    }
+   ],
+   "bare": [
+    "qrcodejs"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/qrcodejs",
+    "unpkg.com/qrcodejs",
+    "cdnjs.cloudflare.com/ajax/libs/qrcodejs",
+    "esm.sh/qrcodejs",
+    "cdn.skypack.dev/qrcodejs"
+   ],
+   "license": "MIT",
+   "licenseFile": "qrcodejs/LICENSE",
+   "bytes": 21038,
+   "hint": "рисует QR-код в элементе страницы: new QRCode(el, «текст»)"
+  },
+  {
+   "id": "qrcode",
+   "name": "node-qrcode",
+   "version": "1.5.4",
+   "kind": "util",
+   "files": [
+    {
+     "path": "qrcode/qrcode.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "qrcode"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/qrcode",
+    "unpkg.com/qrcode",
+    "cdnjs.cloudflare.com/ajax/libs/qrcode",
+    "esm.sh/qrcode",
+    "cdn.skypack.dev/qrcode"
+   ],
+   "license": "MIT",
+   "licenseFile": "qrcode/license",
+   "bytes": 26057,
+   "hint": "QR-код в картинку или на холст, в виде модуля"
+  },
+  {
+   "id": "lil-gui",
+   "name": "lil-gui",
+   "version": "0.21.0",
+   "kind": "util",
+   "files": [
+    {
+     "path": "lil-gui/lil-gui.umd.min.js",
+     "form": "umd",
+     "global": "lil"
+    },
+    {
+     "path": "lil-gui/lil-gui.esm.min.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "lil-gui"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/lil-gui",
+    "unpkg.com/lil-gui",
+    "cdnjs.cloudflare.com/ajax/libs/lil-gui",
+    "esm.sh/lil-gui",
+    "cdn.skypack.dev/lil-gui"
+   ],
+   "license": "MIT",
+   "licenseFile": "lil-gui/LICENSE.md",
+   "bytes": 60143,
+   "hint": "панелька с ползунками для настройки прямо на странице"
+  },
+  {
+   "id": "stats.js",
+   "name": "stats.js",
+   "version": "0.17.0",
+   "kind": "util",
+   "files": [
+    {
+     "path": "stats.js/stats.min.js",
+     "form": "umd",
+     "global": "Stats"
+    },
+    {
+     "path": "stats.js/stats.module.js",
+     "form": "module"
+    }
+   ],
+   "bare": [
+    "stats.js"
+   ],
+   "cdn": [
+    "cdn.jsdelivr.net/npm/stats.js",
+    "unpkg.com/stats.js",
+    "cdnjs.cloudflare.com/ajax/libs/stats.js",
+    "esm.sh/stats.js",
+    "cdn.skypack.dev/stats.js"
+   ],
+   "license": "MIT",
+   "licenseFile": "stats.js/LICENSE",
+   "bytes": 5329,
+   "hint": "счётчик кадров в углу экрана"
+  }
+ ]
+}

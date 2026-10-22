@@ -1,0 +1,22 @@
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.litertlm
+*.task
+*.gguf
+.env
+*.env
+secrets*
+*.xcodeproj/
+.claude/worktrees/
+# Снимки площадки с симулятора (tools/shots-playground.sh) — картинки, не исходники.
+screenshots-playground/
+
+# Движок Bonsai (llama.xcframework) — 310 МБ, не влезает в git (лимит 100 МБ на файл).
+# Кладёт на место tools/check.sh, см. Vendor/LlamaBonsai/Package.swift.
+Vendor/LlamaBonsai/llama.xcframework
+
+# Движок картинок (sdcpp.xcframework) — собирается из закреплённого коммита, в репозитории не живёт.
+Vendor/SDCpp/sdcpp.xcframework

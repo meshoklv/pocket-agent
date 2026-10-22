@@ -1,0 +1,269 @@
+# XcodeGen: описание проекта PocketAgent.
+# Генерация: xcodegen generate   (файл PocketAgent.xcodeproj в .gitignore — он всегда пересоздаётся)
+#
+# ВАЖНО: язык Swift намеренно оставлен в режиме 5.0.
+# Conversation из LiteRTLM — обычный класс, не Sendable; в режиме Swift 6 сборка
+# утонет в ошибках строгой конкурентности. Переключать только осознанно.
+
+name: PocketAgent
+
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: true
+  # Xcode на Маке — 26.2
+  xcodeVersion: "26.2"
+
+# Зависимость через Swift Package Manager — ЛОКАЛЬНЫЙ пакет, лежит в репозитории.
+#
+# Почему локальный, а не url + exactVersion, как было раньше:
+# репозиторий google-ai-edge/LiteRT-LM весит 666 МБ (внутри prebuilt/ под Android,
+# Linux и Windows — Swift-пакету они не нужны), и Xcode при первой сборке клонировал
+# его целиком: 25+ минут на канале владельца, плюс битые LFS-объекты Google валили клон.
+# В Vendor/LiteRTLM лежит только Swift-обёртка — 11 файлов, 128 КБ, код дословный,
+# версия та же 0.15.0. Сама библиотека приходит отдельным файлом с релиза Google
+# по прямой ссылке с контрольной суммой (см. Vendor/LiteRTLM/Package.swift).
+#
+# Версия по-прежнему прибита ТОЧНО к 0.15.0: Swift API помечен авторами как Early Preview,
+# в исходниках висит TODO о смене конструктора Message — «from:» может сломать сборку молча.
+# Как обновляться — в BUILD.md, раздел «Обновление зависимости».
+#
+# path считается от папки, где лежит этот project.yml.
+# Второй движок — от Apple (MLX). Подключается обычным менеджером пакетов,
+# репозиторий маленький (3,2 МБ), вычислительное ядро mlx-swift подтягивается само.
+#
+# Проверено живым запросом к серверу 09.08.2026:
+#   • ml-explore/mlx-swift-lm — последний выпуск 3.31.4 (выпущен 30.06.2026),
+#     минимальные системы в его описании пакета: iOS 17 — совпадает с нашей;
+#   • он сам просит ml-explore/mlx-swift версии 0.31.4 и выше в пределах 0.31.x.
+#
+# ⚠️ ВЕРСИЯ ПРИБИТА ТОЧНО, А НЕ «ЛЮБАЯ ТРЕТЬЯ». Это осознанное отступление от плана
+# (docs/MLX-PLAN.md, шаг 1, где написано majorVersion). Причина ровно та же, по которой
+# точно прибита библиотека Google выше: у нас нет Мака, проверить сборку локально нечем,
+# а при «любой третьей» новый выпуск Apple ломает облачную сборку сам по себе — без
+# единой правки с нашей стороны, и в тот момент, когда мы этого не ждём. Поднимать
+# версию — отдельным осознанным заходом, вместе с проверкой сборки.
+#
+# ⚠️ ТОКЕНИЗАТОР В ПАКЕТ APPLE НЕ ВХОДИТ — ЭТО ГЛАВНАЯ ПОПРАВКА К РАЗВЕДКЕ.
+# В плане написано, что разбор текста «весь свой, внутри». По факту (проверено чтением
+# исходников тега 3.31.4) MLXLMCommon объявляет только ПРОТОКОЛЫ Tokenizer/TokenizerLoader,
+# а единственная готовая реализация лежит в продукте MLXHuggingFace и представляет собой
+# макрос, который разворачивается в код, зовущий Tokenizers.AutoTokenizer из чужой
+# библиотеки. Значит библиотеку с токенизатором обязаны принести мы сами — иначе модель
+# не поднимется вообще. Берём её напрямую, а макрос НЕ берём: макрос тянет за собой
+# swift-syntax и плагин компилятора (лишние минуты сборки и лишнее «доверьте плагин»),
+# а его содержимое — сорок строк переходника, которые мы пишем у себя в MLXRuntime.swift.
+#
+# Проверено живым запросом 09.08.2026: huggingface/swift-transformers — последний выпуск
+# 1.3.3 (16.05.2026), минимальные системы iOS 16, нужный продукт называется Tokenizers.
+packages:
+  LiteRTLM:
+    path: Vendor/LiteRTLM
+  # Движок GGUF (форк PrismML llama.cpp) для моделей Bonsai. Бинарник не в git —
+  # его на место перед сборкой кладёт tools/check.sh (см. объяснение в пакете).
+  LlamaBonsai:
+    path: Vendor/LlamaBonsai
+  # Движок картинок (stable-diffusion.cpp, модель Qwen-Image-2.1). Бинарник не в
+  # репозитории — его кладёт тот же раскладчик, что и движок Bonsai (tools/mac/pa-vendor.sh).
+  SDCpp:
+    path: Vendor/SDCpp
+  MLXLM:
+    url: https://github.com/ml-explore/mlx-swift-lm
+    exactVersion: 3.31.4
+  SwiftTransformers:
+    url: https://github.com/huggingface/swift-transformers
+    exactVersion: 1.3.3
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    CODE_SIGN_STYLE: Automatic
+    # Команду разработчика подставит Xcode при первом открытии.
+    # Можно прописать сюда свой Team ID, чтобы не выбирать руками:
+    # DEVELOPMENT_TEAM: YOUR_TEAM_ID
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_EMIT_LOC_STRINGS: NO
+    CLANG_ENABLE_MODULES: YES
+    ALWAYS_SEARCH_USER_PATHS: NO
+  configs:
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+      SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+      ONLY_ACTIVE_ARCH: YES
+    Release:
+      SWIFT_COMPILATION_MODE: wholemodule
+      SWIFT_OPTIMIZATION_LEVEL: "-O"
+
+targets:
+  PocketAgent:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: PocketAgent
+        excludes:
+          # Эти два файла подключаются через build settings, а не как исходники
+          - "Info.plist"
+          - "PocketAgent.entitlements"
+          # Полка библиотек для площадки подключается отдельной строкой ниже —
+          # целой ПАПКОЙ, а не россыпью файлов. Здесь её обязательно исключить,
+          # иначе те же файлы попадут в сборку дважды: один раз россыпью
+          # (плоско, без подпапок) и один раз папкой — Xcode ругается на
+          # «Multiple commands produce» и сборка встаёт.
+          - "Resources/PlaygroundLib"
+          - "Resources/PlaygroundLib/**"
+          # Шейдеры микрозамера нейроблоков собирает отдельный шаг ниже (язык Metal 4).
+          # Обычное правило Xcode собрало бы их под iOS 17 — и упало бы на тензорах.
+          - "Bench/NABench.metal"
+
+      # Полка библиотек площадки: three.js, phaser, p5 и прочее — ~10,5 МБ,
+      # 76 файлов в 27 подпапках. Кладём в готовое приложение КАК ЕСТЬ, целой
+      # папкой (type: folder — это «синяя папка» Xcode, ссылка на каталог).
+      #
+      # Почему папкой, а не группой файлов: страница-площадка ищет библиотеку
+      # по пути из описи (manifest.json), например PlaygroundLib/three/three.min.js.
+      # Обычная группа файлов Xcode кладёт всё в корень готового приложения
+      # плоским списком — подпапки исчезают, пути из описи перестают совпадать,
+      # и одинаковые имена (у трёх библиотек есть свой LICENSE) затирают друг друга.
+      # Папка-ссылка сохраняет структуру подпапок один в один.
+      #
+      # Библиотеки лежат в приложении, а не качаются из интернета, потому что
+      # у площадки сети нет намеренно — см. PocketAgent/Resources/PlaygroundLib/README.md.
+      - path: PocketAgent/Resources/PlaygroundLib
+        type: folder
+        # Явно, а не «по догадке»: папка едет в «Copy Bundle Resources».
+        buildPhase: resources
+        # Папка PocketAgent/Demo (демонстрационный режим для снимков экранов)
+        # намеренно НЕ исключается здесь: исключение в XcodeGen действует сразу
+        # на все конфигурации, а демонстрация нужна в Debug. Из сборки для магазина
+        # она выпадает иначе — всё её содержимое обёрнуто в #if DEBUG,
+        # и в Release эти файлы компилируются в пустоту.
+
+    # ⚠️ ШЕЙДЕРЫ МИКРОЗАМЕРА НЕЙРОБЛОКОВ A19 (ROADMAP §24.6, PocketAgent/Bench/NABench.*).
+    # Тензоры и Metal Performance Primitives (matmul2d) есть только в языке Metal 4,
+    # то есть с iOS 26. Приложение целится в iOS 17, и штатное правило Xcode собирает
+    # .metal под цель приложения: там заголовок MPP пустой, и сборка падает на
+    # «no template named 'execution_simdgroups'» (проверено на мини 24.09.2026).
+    # Поднять всему приложению минимальную систему до 26 ради замера нельзя, а задать
+    # отдельный язык одному файлу штатными настройками Xcode не выходит. Поэтому файл
+    # исключён из исходников (см. excludes выше) и собирается здесь в отдельную
+    # NABench.metallib с -std=metal4.0 и минимальной системой 26.0. Рядом кладётся сам
+    # текст NABench.metal — замер умеет собрать его и на телефоне с языком 4.1.
+    # Загружает библиотеку только замер (NABench.swift, #if DEBUG) на iOS 26+ —
+    # остальному приложению она не видна. Выпуск (Release) шаг пропускает: замера там нет.
+    # В SDK 26.2 языка metal4.1 для офлайн-сборки нет («invalid value 'metal4.1'»);
+    # отдельного инструмента metallib тоже нет — связывает сам metal.
+    postCompileScripts:
+      - name: "Замер нейроблоков: шейдеры Metal 4"
+        basedOnDependencyAnalysis: true
+        inputFiles:
+          - $(SRCROOT)/PocketAgent/Bench/NABench.metal
+        outputFiles:
+          - $(DERIVED_FILE_DIR)/NABench.air
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/NABench.metallib
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/NABench.metal
+        script: |
+          set -euo pipefail
+          if [ "${CONFIGURATION}" != "Debug" ]; then
+            echo "NABench: сборка ${CONFIGURATION} — шейдеры замера не нужны, пропускаю"
+            exit 0
+          fi
+          SRC="${SRCROOT}/PocketAgent/Bench/NABench.metal"
+          DST="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+          case "${PLATFORM_NAME}" in
+            iphonesimulator) TARGET="air64-apple-ios26.0-simulator" ;;
+            *)               TARGET="air64-apple-ios26.0" ;;
+          esac
+          # Компилятор зовём по полному пути из набора инструментов, как его зовёт сам
+          # Xcode, а не через xcrun: на офисном мини Xcode лежит в папке без «.app», и
+          # xcrun изнутри сборки отвечает «unable to find Xcode installation» (поймано
+          # 24.09.2026). Путь из переменных Xcode работает везде.
+          # На Маке владельца (Xcode 26.2, macOS 26) компилятор по пути набора — заглушка,
+          # которая ищет скачанный компонент Metal и внутри сборки отвечает «missing
+          # Metal Toolchain», хотя компонент стоит (16.10.2026). Поэтому пробуем по
+          # очереди оба пути, а если не вышел ни один — пропускаем шаг с
+          # предупреждением: это только микрозамер нейроблоков, приложение без него
+          # работает, и из-за него не должна вставать доставка на телефон.
+          mkdir -p "${DERIVED_FILE_DIR}" "${DST}"
+          for METAL in "${DT_TOOLCHAIN_DIR:-${TOOLCHAIN_DIR:-}}/usr/bin/metal" "$(xcrun -f metal 2>/dev/null || true)"; do
+            [ -x "${METAL}" ] || continue
+            if "${METAL}" -std=metal4.0 -target "${TARGET}" -isysroot "${SDKROOT}" -c "${SRC}" -o "${DERIVED_FILE_DIR}/NABench.air" \
+               && "${METAL}" -target "${TARGET}" -isysroot "${SDKROOT}" "${DERIVED_FILE_DIR}/NABench.air" -o "${DST}/NABench.metallib"; then
+              cp "${SRC}" "${DST}/NABench.metal"
+              echo "NABench: $(wc -c < "${DST}/NABench.metallib") байт библиотеки ядер (${METAL})"
+              exit 0
+            fi
+          done
+          echo "warning: NABench: компилятор Metal недоступен в сборке — микрозамер нейроблоков в этой сборке не будет"
+          cp "${SRC}" "${DST}/NABench.metal"
+          exit 0
+
+    dependencies:
+      # Продукт LiteRTLMFoundationModels (про Apple Foundation Models) приложению не нужен —
+      # в локальный пакет он не переносился, подключать нечего.
+      - package: LiteRTLM
+        product: LiteRTLM
+      # Движок для GGUF-моделей. Бинарник llama.xcframework обязан лежать в
+      # Vendor/LlamaBonsai ЕЩЁ ДО сборки. В git его нет (310 МБ — крупнее лимита),
+      # а без бинарника резолв этого пакета ПАДАЕТ: сборки не будет вовсе.
+      # Никакой сборки «в пустоту» за canImport здесь не бывает — canImport в
+      # Runtime/LlamaRuntime.swift страхует от сборки без пакета как такового,
+      # а не без бинарника. Раскладывают движок одинаково все пути доставки —
+      # tools/check.sh, tools/ship.sh, tools/release-to-testflight.sh — общим
+      # раскладчиком tools/mac/pa-vendor.sh (кэш ~/pa-vendor, метка версии,
+      # при отсутствии — скачивание с релиза PrismML).
+      - package: LlamaBonsai
+        product: LlamaBonsai
+      # Движок картинок — отдельный фреймворк со СВОИМ спрятанным ggml, поэтому
+      # с движком Bonsai не конфликтует (объяснение в Vendor/SDCpp/Package.swift).
+      - package: SDCpp
+        product: SDEngine
+      # Из восьми продуктов пакета Apple берём два: сами языковые модели и общую часть
+      # (разговор, разбор вызовов действий, описание модели). Картинки, вложения,
+      # поиск по смыслу и мост к Apple Foundation Models приложению не нужны — каждый
+      # лишний продукт это лишние минуты сборки и лишние мегабайты в готовом файле.
+      - package: MLXLM
+        product: MLXLLM
+      - package: MLXLM
+        product: MLXLMCommon
+      # Токенизатор. Без него движок Apple не поднимется: он умеет считать, но не умеет
+      # превращать слова в числа и обратно — см. объяснение выше, у списка пакетов.
+      - package: SwiftTransformers
+        product: Tokenizers
+
+    settings:
+      base:
+        PRODUCT_NAME: PocketAgent
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.pocketagent  # change to your own reverse-DNS id
+        # Иконка приложения. Без неё App Store Connect отклоняет сборку с
+        # «Missing required icon file» — ровно на этом развалилась первая отправка.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_FILE: PocketAgent/Info.plist
+        CODE_SIGN_ENTITLEMENTS: PocketAgent/PocketAgent.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        # 1 = iPhone, 2 = iPad
+        TARGETED_DEVICE_FAMILY: "1,2"
+        # Файл модели весит 2,6 ГБ и качается в рантайме — в бандл он не кладётся,
+        # поэтому bitcode/asset-оптимизации тут ни при чём.
+        ENABLE_PREVIEWS: YES
+        DEVELOPMENT_ASSET_PATHS: ""
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+
+schemes:
+  PocketAgent:
+    build:
+      targets:
+        PocketAgent: all
+    run:
+      config: Debug
+    archive:
+      config: Release
