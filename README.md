@@ -15,7 +15,7 @@
   <img alt="Language" src="https://img.shields.io/badge/Swift-5-orange?style=flat-square">
   <img alt="Model" src="https://img.shields.io/badge/model-Gemma%204%20E2B-4285F4?style=flat-square">
   <img alt="Works offline" src="https://img.shields.io/badge/works-offline-success?style=flat-square">
-  <img alt="Build" src="https://img.shields.io/github/actions/workflow/status/meshoklv/pocket-agent/build.yml?style=flat-square&label=build">
+  <img alt="Build" src="https://img.shields.io/github/actions/workflow/status/meshoklv/pocket-agent/build.yml?branch=main&style=flat-square&label=build">
   <img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square">
 </p>
 
