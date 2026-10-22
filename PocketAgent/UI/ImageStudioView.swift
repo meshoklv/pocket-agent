@@ -4,7 +4,7 @@
 //
 //  Экран «Картинки»: модель картинок (Qwen-Image 2.1, Z-Image-Turbo, FLUX.2 klein, FLUX.3 klein —
 //  реестр `ImageModelRegistry`) рисует и правит фото прямо на телефоне.
-//  Вход — строка «Картинки» на вкладке «Модели» и находка в поиске. ROADMAP §21, §23.
+//  Вход — строка «Картинки» на вкладке «Модели» и находка в поиске.,.
 //
 //  ⚠️ ЭКРАН ГОВОРИТ ТОЛЬКО ТО, ЧТО НУЖНО СЕЙЧАС (CLAUDE.md, приёмщик интерфейса).
 //  Пока модели нет — одна карточка «скачать». Когда есть — поле, образцы, два выбора
@@ -30,7 +30,7 @@ enum ImageQuality: String, CaseIterable, Identifiable {
         }
     }
     /// ⚠️ Шаги и размер больше не здесь: у каждой модели свои (реестр
-    /// `ImageModelRegistry`, ROADMAP §23). Турбо-модели на 28 шагах просто зря
+    /// `ImageModelRegistry`). Турбо-модели на 28 шагах просто зря
     /// греют телефон, а Qwen-Image на 8 рисует кашу.
     var level: ImagePresetLevel {
         switch self {
@@ -102,7 +102,7 @@ final class ImageStudioModel: ObservableObject {
     @Published private(set) var phase: Phase = .idle
     @Published private(set) var isStopping = false
     @Published private(set) var result: UIImage?
-    /// Черновик, который проступает по шагам (ROADMAP §24). Есть только пока рисуем.
+    /// Черновик, который проступает по шагам. Есть только пока рисуем.
     @Published private(set) var preview: UIImage?
     /// Растёт на каждой новой картинке — экран по нему прокручивается к ней.
     @Published private(set) var resultVersion = 0
@@ -117,12 +117,12 @@ final class ImageStudioModel: ObservableObject {
     /// Какой моделью рисуем. Запоминается между запусками.
     @Published private(set) var family: ImageModelFamily = ImageStudioModel.savedFamily()
     @Published private(set) var preciseReady = false
-    /// Турбо-версия на телефоне (у семейства, где она бывает). ROADMAP §24.
+    /// Турбо-версия на телефоне (у семейства, где она бывает)..
     @Published private(set) var turboReady = false
-    /// Турбо v0.2.1 (дополнение поверх обычной) на телефоне. ROADMAP §24.4.
+    /// Турбо v0.2.1 (дополнение поверх обычной) на телефоне..
     @Published private(set) var turboLoRAReady = false
     /// «2,4 МБ/с · осталось 12 мин · с зеркала ModelScope» — пока идёт загрузка.
-    /// Пусто — считать ещё не по чему. ROADMAP §23: «непонятно даже какая скорость
+    /// Пусто — считать ещё не по чему.: «непонятно даже какая скорость
     /// и ваще не ясно с какого хоста качаю».
     @Published private(set) var downloadLine = ""
 
@@ -197,7 +197,7 @@ final class ImageStudioModel: ObservableObject {
         diffusionOverrideID = UserDefaults.standard.string(forKey: Self.overrideKey(family))
     }
 
-    // MARK: Формат рисующей части (для замера скорости, ROADMAP §24)
+    // MARK: Формат рисующей части
 
     /// Выбранный вручную формат. nil — как обычно (лёгкая, в «Максимуме» точная).
     @Published private(set) var diffusionOverrideID: String?
@@ -415,8 +415,8 @@ final class ImageStudioModel: ObservableObject {
         let refs = family.supportsReferences
             ? references.compactMap { Self.pixels(from: $0.image, maxSide: preset.baseSide) }
             : []
-        // Турбо рисует за свои 4 шага (ROADMAP §24); размер — тот же, что у уровня.
-        // Турбо v0.2.1 (дополнение) — за 6 шагов на своём расписании (§24.4); нет её — v0.1.
+        // Турбо рисует за свои 4 шага; размер — тот же, что у уровня.
+        // Турбо v0.2.1 (дополнение) — за 6 шагов на своём расписании; нет её — v0.1.
         let loraTurbo = ImageModelCatalog.turboLoRAToUse(family, level: quality.level,
                                                          overrideID: diffusionOverrideID)
         let turbo = loraTurbo == nil
@@ -436,7 +436,7 @@ final class ImageStudioModel: ObservableObject {
         genWork = Task {
             // Чат-модель держит гигабайты — отпускаем её до того, как грузить свою.
             await app.releaseChatModelForImages()
-            // В журнал картинки — выгрузилась ли чат-модель на самом деле (ROADMAP §24.5).
+            // В журнал картинки — выгрузилась ли чат-модель на самом деле.
             ImageGenEngine.shared.setChatModelNote(app.chatModelNoteForImageLog)
             let outcome: Result<ImageGenResult, Error>
             // Остановили, пока выгружалась чат-модель, — дальше не идём.
@@ -516,7 +516,7 @@ final class ImageStudioModel: ObservableObject {
     /// на секунды получить две модели в памяти. Загрузку не трогаем — она доедет сама.
     ///
     /// Открытую модель картинок (контекст движка) держим для следующей картинки
-    /// (ROADMAP §24, задача Б): возвращается чат-модель — закрываем сразу (это делает
+    ///: возвращается чат-модель — закрываем сразу (это делает
     /// `AppViewModel.prepareModel`); чату возвращать нечего — держим ещё
     /// `keepAfterCloseSeconds`, чтобы вернуться на экран без повторного открытия.
     func screenClosed(app: AppViewModel) {
@@ -538,7 +538,7 @@ final class ImageStudioModel: ObservableObject {
         ImageGenEngine.shared.cancelScheduledRelease()
     }
 
-    // MARK: Проверка ядра умножения (для замера скорости, ROADMAP §24)
+    // MARK: Проверка ядра умножения
 
     /// Итог последней проверки одной строкой; nil — не проверяли.
     @Published private(set) var kernelCheckLine: String?
@@ -605,11 +605,11 @@ final class ImageStudioModel: ObservableObject {
         func gb(_ v: UInt64) -> String { String(format: "%.1f ГБ", Double(v) / 1_073_741_824).replacingOccurrences(of: ".", with: ",") }
         func sec(_ v: Double) -> String { String(format: "%.1f с", v).replacingOccurrences(of: ".", with: ",") }
         // По частям — чтобы на телефоне сравнивать форматы весов и матричные блоки
-        // по шагу, а не по общему времени (ROADMAP §24). Каждый шаг — в журнале запуска.
+        // по шагу, а не по общему времени. Каждый шаг — в журнале запуска.
         let steps = r.stepSeconds
         var parts = ["подготовка \(sec(r.prepareSeconds))"]
         // Была ли модель уже открыта прошлой картинкой и понадобился ли энкодер
-        // (ROADMAP §24, задача Б) — чтобы на телефоне видеть, откуда взялась подготовка.
+        // — чтобы на телефоне видеть, откуда взялась подготовка.
         parts.append(r.contextReused ? "модель уже открыта" : "открытие модели \(sec(r.contextOpenSeconds))")
         if r.promptFromCache { parts.append("описание из памяти") }
         if !steps.isEmpty {
@@ -845,7 +845,7 @@ struct ImageStudioView: View {
                     Button("Пауза") { model.pauseDownload() }
                         .font(.subheadline)
                 }
-                // Скорость, остаток и откуда качаем — ROADMAP §23. Пока считать не по чему,
+                // Скорость, остаток и откуда качаем —. Пока считать не по чему,
                 // строки нет вовсе, а не «считаю…»: процент выше и так показывает движение.
                 if !model.downloadLine.isEmpty {
                     Text(model.downloadLine)
@@ -1154,7 +1154,7 @@ struct ImageStudioView: View {
         }
     }
 
-    /// Переключатели для сравнения скорости на телефоне (ROADMAP §24): формат
+    /// Переключатели для сравнения скорости на телефоне: формат
     /// рисующей части и матричные блоки видеочипа. Спрятаны в «…»: нужны для замера,
     /// а не каждый раз. Какими весами рисовали — видно в «Подробностях» под картинкой.
     private var speedMenu: some View {
@@ -1245,7 +1245,7 @@ struct ImageStudioView: View {
 
 extension AppViewModel {
     /// Что с чат-моделью прямо сейчас — строкой для журнала картинки. Гипотеза владельца
-    /// «в памяти сидят две модели» (ROADMAP §24.5) проверяется по этой строке, а не на глаз.
+    /// «в памяти сидят две модели» проверяется по этой строке, а не на глаз.
     var chatModelNoteForImageLog: String {
         switch modelStatus {
         case .idle: return "не загружена"

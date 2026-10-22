@@ -49,7 +49,7 @@ struct GlassCircleButton: View {
         self.action = action
     }
 
-    /// Совместимый конструктор из `docs/UI-CONTRACT.md` — экраны писались по нему.
+    /// Совместимый конструктор из `design notes` — экраны писались по нему.
     /// Оставлен рядом с богатым: `prominent` — это `.primary`, обычная кнопка — `.standard`.
     init(systemImage: String,
          accessibilityLabel: String,

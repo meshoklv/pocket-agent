@@ -10,7 +10,7 @@ re-verified before a release.
 
 | Model | Used for | License |
 |---|---|---|
-| Gemma 4 E2B (`litert-community/gemma-4-E2B-it-litert-lm`) | default on-device model | Declared in the app catalog as Apache 2.0. **Verify on the model card before you redistribute.** Earlier Gemma generations (e.g. Gemma 3n) were under the Gemma Terms of Use (https://ai.google.dev/gemma/terms) with its Prohibited Use Policy; if you use such a model, those terms apply to you. |
+| Gemma 4 E2B (`litert-community/gemma-4-E2B-it-litert-lm`) | default on-device model | **Apache License 2.0.** Verified 2026-10-22: the Hugging Face model card (https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm) declares `license: apache-2.0`, and Google's Gemma 4 license page (https://ai.google.dev/gemma/docs/gemma_4_license) states that Gemma 4 is governed by the Apache License 2.0. Earlier Gemma generations (e.g. Gemma 3n) were under the separate Gemma Terms of Use (https://ai.google.dev/gemma/terms); if you use such a model, those terms apply to you. |
 
 The model is never bundled: it is downloaded on first launch (or with
 `scripts/download-model.sh`) from Hugging Face. You are responsible for

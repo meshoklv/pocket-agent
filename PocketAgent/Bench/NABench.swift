@@ -3,7 +3,7 @@
 //  PocketAgent / Bench
 //
 //  МИКРОЗАМЕР МАТРИЧНЫХ БЛОКОВ A19 (Neural Accelerators) НА ТЕЛЕФОНЕ.
-//  ROADMAP §24.6, ТЗ — docs/research/na-spec.md §4 (ядра K0–K6). Ядра — NABench.metal.
+// Ядра K0–K6. Ядра — NABench.metal.
 //
 //  ЗАЧЕМ. Умножения — 74 % блока рисующей части, и идут они на ~3,3 трлн оп/с, то есть
 //  на уровне обычного пути (simdgroup_matrix). Прежде чем чинить ядро в ggml, надо
@@ -36,7 +36,7 @@
 //
 //  ОТКУДА БИБЛИОТЕКА ЯДЕР. "offline" — NABench.metallib, собранный шагом сборки Xcode
 //  с `-std=metal4.0` (project.yml). "src4.1" / "src4.0" — тот же текст (NABench.metal
-//  лежит в приложении), собранный на самом телефоне с явным языком 4.1 / 4.0: ТЗ §4
+//  лежит в приложении), собранный на самом телефоне с явным языком 4.1 / 4.0: тест
 //  просит проверить, что выбор языка не выключает блоки. Пиковые ядра гоняются на
 //  каждой библиотеке, GEMM — на одной (`gemmLibrary`).
 //
@@ -68,7 +68,7 @@ struct NABenchConfig: Decodable {
     var samples: Int?
     /// Сколько работы видеочипа в одном замере, мс (повторы подбираются под это).
     var targetMs: Double?
-    /// Пауза между ядрами, с (ТЗ: 2).
+    /// Пауза между ядрами, с (по умолчанию 2).
     var pauseSeconds: Double?
     /// Сколько точек результата сверять с процессором.
     var checkPoints: Int?
@@ -310,7 +310,7 @@ final class NABench {
         self.progress = progress
     }
 
-    // Настройки по умолчанию — по ТЗ §4.
+    // Настройки по умолчанию.
     private var warmup: Int { max(1, cfg.warmup ?? 3) }
     private var nSamples: Int { max(1, cfg.samples ?? 10) }
     private var targetMs: Double { max(5, cfg.targetMs ?? 60) }

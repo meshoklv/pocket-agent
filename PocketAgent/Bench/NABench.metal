@@ -3,13 +3,13 @@
 //  PocketAgent / Bench
 //
 //  МИКРОЗАМЕР МАТРИЧНЫХ БЛОКОВ A19 (Neural Accelerators) — ядра видеочипа.
-//  ROADMAP §24.6, ТЗ — docs/research/na-spec.md §4 (ядра K0–K6). Хозяин замера —
+//  Ядра K0–K6. Хозяин замера —
 //  NABench.swift: там как запускать, что значат числа и какие ядра к какому K относятся.
 //
 //  ⚠️ ЭТОТ ФАЙЛ НЕ КОМПИЛИРУЕТСЯ ОБЫЧНЫМ ПРАВИЛОМ XCODE. Он исключён из исходников
 //  в project.yml и собирается отдельным шагом сборки в NABench.metallib с ключами
 //  `-std=metal4.0 -mios-version-min=26.0`; тот же текст кладётся в приложение, чтобы
-//  замер мог собрать его ещё и на самом телефоне с языком 4.1 (ТЗ §4). Причина:
+//  замер мог собрать его ещё и на самом телефоне с языком 4.1. Причина:
 //  приложение целится в iOS 17, а тензоры (`<metal_tensor>`) и Metal Performance
 //  Primitives есть только в языке Metal 4 (iOS 26+). Обычное правило Xcode собирает
 //  шейдеры под цель приложения — там `__HAVE_TENSOR__` не определён и заголовок MPP
@@ -350,7 +350,7 @@ kernel void na_has_tensor(device int * p [[buffer(0)]], uint i [[thread_position
 // одна группа лучше; у Cider/tessl на M5 крупные плитки на много групп лучше. Кто прав
 // на НАШИХ размерах — ради этого замер.
 // ⚠️ Указатели device передаются в tensor() НЕконстантными: const «отравляет» подбор
-// типов MPP (tessl, na-spec §1.6).
+// типов MPP (tessl).
 // ─────────────────────────────────────────────────────────────────────────────
 
 template <int NSG> struct na_scope { using type = execution_simdgroups<NSG>; };
@@ -368,7 +368,7 @@ static inline void na_zero(thread CT & cT) {
     }
 }
 
-// ── K1/K2/K3 — пик блоков по tzakharko (na-spec §2.1): одни и те же маленькие тензоры
+// ── K1/K2/K3 — пик блоков по tzakharko: одни и те же маленькие тензоры
 // устройства (лежат в кэше), результат — кооперативный, iters одинаковых run подряд.
 // Это потолок СЧЁТА без памяти; настоящий GEMM его не достигнет.
 // Работа: группы × iters × 2·MT·NT·KT (iters кратно 4).
@@ -398,7 +398,7 @@ void na_peak(device const TL * A [[buffer(0)]],
 }
 
 // ── GEMM, операнды прямо из памяти устройства. BK = 0 — K целиком одним вызовом
-// (dynamic_extent: MPP сам крутит K, как у tessl §2.4), иначе цикл по K шагом BK
+// (dynamic_extent: MPP сам крутит K, как у tessl), иначе цикл по K шагом BK
 // с плитками постоянного размера (без проверок краёв внутри MPP).
 template <typename TI, typename TA, int BT, int BW, int BK, int NSG, bool RELAX>
 [[kernel, max_total_threads_per_threadgroup(na_threads(NSG))]]
@@ -455,7 +455,7 @@ static inline void na_copy_tile(threadgroup TI * dst, device const TI * src, int
 }
 
 // ── GEMM, операнды из общей памяти группы (обе плитки), двойной буфер — один барьер
-// на шаг K (схема нашего ggml-ядра T, na-spec §3). WF ≥ 1 (только TI = half) — веса
+// на шаг K (схема нашего ggml-ядра T). WF ≥ 1 (только TI = half) — веса
 // блочного формата разворачиваются в half при загрузке в общую память: (в) «наш» путь.
 template <typename TI, typename TA, int BT, int BW, int BK, int NSG, int WF>
 [[kernel, max_total_threads_per_threadgroup(na_threads(NSG))]]
@@ -509,9 +509,9 @@ void na_mpp_tg(device const TI * X     [[buffer(0)]],
 // Схема MLX (steel/gemm/nax.h, quantized_nax.h; © 2025 Apple, MIT) — то, что стоит в
 // нашем ggml-ядре N (kernel_mul_mm_nax): каждая SIMD-группа считает СВОЮ подплитку
 // 32×32 кусками matmul2d<16,32,16, execution_simdgroup>, операнды — кооперативные
-// тензоры в регистрах, раскладка элементов — как у MLX (Apple её не документирует,
-// na-spec §1.5). Внутри K-цикла — `volatile int compiler_barrier`, как у MLX и Cider:
-// иначе компилятор поднимает все загрузки над всеми run и выливает регистры (§1.6).
+// тензоры в регистрах, раскладка элементов — как у MLX (Apple её не документирует).
+// Внутри K-цикла — `volatile int compiler_barrier`, как у MLX и Cider:
+// иначе компилятор поднимает все загрузки над всеми run и выливает регистры.
 // ─────────────────────────────────────────────────────────────────────────────
 
 namespace na_reg_detail {
@@ -605,7 +605,7 @@ void na_k4(device const TI * A [[buffer(0)]],
 
 // ── GEMM по схеме MLX. X (half или int8) — прямо из памяти устройства в регистры.
 //   WF = -1 — веса тоже прямо из памяти в регистры, без общей памяти (fp16-путь MLX,
-//             Cider «шаг 2», na-spec §2.2–2.3);
+//             Cider «шаг 2»);
 //   WF ≥  0 — веса через общую память группы: 0 — f16 копией, 1..4 — развёртка блочного
 //             формата (q4a/q40/q80/q4k) = наше ядро N; шаг K 64, два барьера на шаг.
 template <typename TI, typename TA, int BT, int BW, int WT, int WW, int WF>

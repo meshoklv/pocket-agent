@@ -3,7 +3,7 @@
 # and verify its SHA-256. Revision, size and hash match PocketAgent/Runtime/ModelCatalog.swift.
 # Usage: scripts/download-model.sh [output-dir]   (default: ./models)
 # Then copy the file to the iPhone (Files app -> Pocket Agent) - see README.
-# Check the model's license on its Hugging Face page before redistributing.
+# The model is Apache-2.0 (see THIRD_PARTY_NOTICES.md).
 set -euo pipefail
 OUT="${1:-models}"
 REPO="litert-community/gemma-4-E2B-it-litert-lm"

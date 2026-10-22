@@ -166,7 +166,7 @@ public enum ModelSourceCatalog {
     public static let official = ModelSource(
         id: "huggingface",
         // ⚠️ Имя площадки, а не «официальный сайт»: владелец спросил прямо — «не ясно
-        // с какого хоста качаю» (ROADMAP §23). «Официальный сайт» чего — не понятно.
+        // с какого хоста качаю». «Официальный сайт» чего — не понятно.
         humanName: "с Hugging Face",
         isOfficial: true,
         urlTemplate: "https://huggingface.co/{repo}/resolve/{commit}/{file}"
@@ -190,7 +190,7 @@ public enum ModelSourceCatalog {
 
     /// Зеркала.
     ///
-    /// ⚠️ hf-mirror.com СЮДА НЕ ВХОДИТ И СЕГОДНЯ — ПЕРЕПРОВЕРЕНО 23.09.2026 (ROADMAP §23).
+    /// ⚠️ hf-mirror.com СЮДА НЕ ВХОДИТ И СЕГОДНЯ — ПЕРЕПРОВЕРЕНО 23.09.2026.
     /// Проба куском 4 МБ по всем пяти файлам модели картинок и по чат-моделям: он
     /// по-прежнему отвечает перенаправлением на ту же сеть доставки Hugging Face
     /// (us.aws.cdn.hf.co, тот же адрес объекта). То есть это не второй источник, а тот же

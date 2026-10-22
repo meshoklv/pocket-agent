@@ -1,7 +1,7 @@
 // swift-tools-version: 5.9
 //
 // Пакет движка картинок: stable-diffusion.cpp (leejet) с Metal, модель Qwen-Image-2.1.
-// ROADMAP §21.
+//.
 //
 // Почему СВОЙ пакет и свой фреймворк, а не общий ggml с движком Bonsai: у sd.cpp
 // ggml с собственными заплатками, у PrismML — с тернарными форматами. Это две

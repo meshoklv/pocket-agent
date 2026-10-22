@@ -1,0 +1,5 @@
+{
+  "description": "A coding agent living entirely on your iPhone: local Gemma, works offline, writes files only after you confirm.",
+  "homepage": "",
+  "topics": ["ios", "swift", "coding-agent", "on-device-ai", "local-llm", "gemma", "offline", "litert", "llm", "swiftui"]
+}

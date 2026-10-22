@@ -203,7 +203,7 @@ struct DownloadSpeedSheet: View {
 
     /// Круглая стеклянная кнопка закрытия — единственное стекло на странице.
     /// ⚠️ Подложка под ней живёт ТОЛЬКО на iOS 17–18: на iOS 26 непрозрачный фон
-    /// позади стекла запрещён (docs/LIQUID-GLASS.md).
+    /// позади стекла запрещён.
     @ViewBuilder
     private var closeLayer: some View {
         if GlassAvailability.isLiquidGlassAvailable {

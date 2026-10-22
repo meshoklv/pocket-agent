@@ -20,4 +20,4 @@ Requirements: macOS with Xcode 26.2, [XcodeGen](https://github.com/yonaskolb/Xco
    and copy the file to the phone via the Files app.
 
 `.github/workflows/build.yml` is an unsigned compile check on a macOS runner; it needs no secrets.
-Many source comments refer to internal design notes (`docs/...`, `ROADMAP`) that are not part of this release.
+

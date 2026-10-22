@@ -4,19 +4,19 @@
 //
 //  Реестр семейств моделей картинок: из каких частей состоит модель, откуда их брать,
 //  с какими настройками рисовать и как узнать семейство по находке в поиске.
-//  ROADMAP §23 (дополнение владельца: «не только Qwen-Image»).
+// (дополнение владельца: «не только Qwen-Image»).
 //
 //  ⚠️ ЧТО УМЕЕТ ДВИЖОК — СВЕРЕНО ПО ЕГО ДОКУМЕНТАЦИИ НА НАШЕМ КОММИТЕ 88411ef
-//  (docs/qwen_image_2.1.md, docs/z_image.md, docs/flux2.md, docs/flux.md, docs/sd.md),
+//,
 //  23.09.2026. В реестр вошли три набора, у которых все части лежат в ОТКРЫТЫХ
 //  репозиториях (без согласия с условиями на сайте — приложение так качать не умеет):
 //    • Qwen-Image 2.1 — был и раньше;
 //    • Z-Image-Turbo — лёгкая и быстрая (8 шагов), без правки фото;
 //    • FLUX.2 klein 4B — самая лёгкая (4 шага), умеет правку по образцу.
-//    • FLUX.3 klein — добавлена 16.10.2026 (docs/flux3.md апстрима, п.14 нашего форка).
+//    • FLUX.3 klein — добавлена 16.10.2026.
 //  FLUX.1 schnell движок тоже умеет, но ему нужны clip_l + t5xxl (ещё ~5 ГБ,
 //  четвёртая часть) — отложено. SDXL/SD1.5 — отдельный путь (один файл-чекпойнт),
-//  тоже отложено: записано в ROADMAP §23.
+//  тоже отложено: записано в.
 //
 //  ⚠️ ВСЕ РАЗМЕРЫ, СУММЫ И ВЕРСИИ СНЯТЫ ЗАПРОСОМ К API HUGGING FACE
 //  (`/api/models/<репо>?blobs=true`) 23.09.2026. Править «по памяти» нельзя.
@@ -42,7 +42,7 @@ public struct ImagePreset: Sendable, Equatable {
     public let baseSide: Int
 }
 
-/// Пропуск похожих шагов рисования (кэш шагов движка, docs/caching.md движка).
+/// Пропуск похожих шагов рисования.
 /// Ставится семейству, только если замер показал выигрыш без потери качества.
 public struct ImageStepCache: Sendable, Equatable {
     public enum Mode: Sendable, Equatable { case easyCache, spectrum }
@@ -52,7 +52,7 @@ public struct ImageStepCache: Sendable, Equatable {
 }
 
 /// Турбо-версия рисующей части: та же модель, «дистиллированная» на несколько шагов
-/// и без силы следования описанию (CFG 1). ROADMAP §24.
+/// и без силы следования описанию (CFG 1)..
 ///
 /// ⚠️ CFG 1 — это не «слабее следует описанию», а ПОЛОВИНА работы: движок при CFG 1
 /// не считает второй, «пустой» проход на каждом шаге (проверено по исходнику
@@ -70,7 +70,7 @@ public struct ImageTurbo: Sendable, Equatable {
     public let levels: Set<ImagePresetLevel>
 }
 
-/// Турбо на дополнении-LoRA поверх ОБЫЧНОЙ рисующей части (Viggle v0.2.1, ROADMAP §24.4).
+/// Турбо на дополнении-LoRA поверх ОБЫЧНОЙ рисующей части.
 ///
 /// ⚠️ Только поверх обычной модели: Viggle прямо пишет «never stack two students» —
 /// LoRA на турбо-файл v0.1 давала бы двойную дистилляцию. Поэтому рисует лёгкая Q4_0
@@ -141,7 +141,7 @@ public struct ImageModelFamily: Sendable, Identifiable, Equatable {
     /// («flux3imagekleinbase» содержит «flux3imageklein», а настройки у неё другие).
     public var nameExcludes: [String] = []
 
-    /// Другие форматы рисующей части — для сравнения скорости на телефоне (ROADMAP §24).
+    /// Другие форматы рисующей части — для сравнения скорости на телефоне.
     /// Человек выбирает их в «…» → «Веса рисующей части»; сами не качаются.
     public var diffusionVariants: [ModelDescriptor] = []
     /// Кэш шагов. nil — каждый шаг считается полностью.
@@ -150,7 +150,7 @@ public struct ImageModelFamily: Sendable, Identifiable, Equatable {
     public var stepCache: ImageStepCache? = nil
     /// Турбо-версия. nil — у семейства её нет (или оно само турбо).
     public var turbo: ImageTurbo? = nil
-    /// Турбо v0.2.1 — дополнение к обычной модели, качается кнопкой по желанию (§24.4).
+    /// Турбо v0.2.1 — дополнение к обычной модели, качается кнопкой по желанию.
     /// ⚠️ В установку по умолчанию НЕ входит: честное сравнение с настоящей v0.1 на мини
     /// разницы «заметно лучше» не показало, а на телефоне это ~+30 с к картинке.
     public var turboLoRA: ImageTurboLoRA? = nil
@@ -218,12 +218,12 @@ public enum ImageModelRegistry {
         // Кэш шагов EasyCache: замер на мини 24.09.2026 — 12 шагов за 268 с вместо 454 с
         // (пропущено 5 из 12), картинка та же (отличие от обычной на уровне шума между
         // двумя видами внимания). Отвергнуты числом: Spectrum (306 с — медленнее),
-        // DBCache (232 с, но двоится лицо). docs/research/image-speed-measured.md.
+        // DBCache (232 с, но двоится лицо).
         stepCache: ImageStepCache(mode: .easyCache, threshold: nil),
         turbo: ImageModelCatalog.turbo,
         turboLoRA: ImageModelCatalog.turboLoRA)
 
-    // MARK: Z-Image-Turbo (docs/z_image.md движка)
+    // MARK: Z-Image-Turbo
 
     private static let zFolder = "ZImageTurbo"
 
@@ -276,7 +276,7 @@ public enum ImageModelRegistry {
         // с нашими настройками она нарисует кашу.
         nameKeys: ["zimageturbo"],
         license: "Apache 2.0",
-        // Для сравнения на телефоне (ROADMAP §24); суммы из API HF 24.09.2026.
+        // Для сравнения на телефоне; суммы из API HF 24.09.2026.
         diffusionVariants: [
             part(id: "z-image-turbo-q4-0", name: "Z-Image-Turbo — рисующая часть (Q4_0)",
                  folder: zFolder, repo: "leejet/Z-Image-Turbo-GGUF",
@@ -292,7 +292,7 @@ public enum ImageModelRegistry {
                  license: "Apache 2.0"),
         ])
 
-    // MARK: FLUX.2 klein 4B (docs/flux2.md движка)
+    // MARK: FLUX.2 klein 4B
 
     private static let kleinFolder = "Flux2Klein4B"
 
@@ -346,7 +346,7 @@ public enum ImageModelRegistry {
         nameKeys: ["flux2klein4b"],
         license: "Apache 2.0")
 
-    // MARK: FLUX.3 Image Klein (docs/flux3.md движка, ROADMAP §24.8)
+    // MARK: FLUX.3 Image Klein
     //
     // Новый Flux от Black Forest Labs (вышел 13.10.2026): 5,6B, «дистиллированная» версия
     // рисует за 16 шагов без второго прохода CFG. Движок умеет её с п.14 нашего форка

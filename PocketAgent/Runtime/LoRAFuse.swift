@@ -3,7 +3,7 @@
 //  PocketAgent / Runtime
 //
 //  Переписывает дополнение-LoRA турбо v0.2.1 от Viggle (Qwen-Image 2.1) под раскладку
-//  нашего рисующего файла. Порт `tools/lora/convert_qwen_lora.py` один в один. ROADMAP §24.4.
+//  нашего рисующего файла. Порт `tools/lora/convert_qwen_lora.py` один в один..
 //
 //  Зачем. У Qwen-Image 2.1 слой MLP картинки в файлах GGUF (leejet, Abiray) хранится
 //  ОДНОЙ слитой матрицей `img_mlp.gate_up` = [gate_layer; proj], а LoRA от Viggle
